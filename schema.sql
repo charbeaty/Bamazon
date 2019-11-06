@@ -27,16 +27,3 @@ VALUES ("Stretch Arm Strong", "Toys", 15.00, 50),
 ("Suspect", "Books", 12.00, 50),
 ("Safe Haven", "Movies", 19.95, 50);
 
-CREATE TABLE departments(
-    department_id INT AUTO_INCREMENT NOT NULL,
-    department_name VARCHAR(50) NOT NULL,
-    over_head_costs DECIMAL(10,2) NOT NULL,
-    primary key(department_id)
-);
-
-SELECT * FROM departments;
-
-INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Toys", 75),
-("Books", 50),
-("Movies", 20);

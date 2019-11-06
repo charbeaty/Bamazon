@@ -3,54 +3,91 @@ var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
     host: "localhost",
-
-    port: 3000,
-
+    port: 3030,
     user: "root",
-
     password: "P@izley2013",
     database: "bamazon_db"
 });
-
+//connect to mysql server and database
 connection.connect(function(err) {
-    if (err) throw err;
-    runSearch();
-});
+    if (err) {
+        console.error("error connecting: " + err.stack);
+    }
+    //run the loadProducts function after connection is made
+    loadProducts();
+} );
 
-function runSearch() {
-    inquirer 
-    .prompt({
-        name: "item_id",
-        type: "input",
-        message: "What is the ID of the product(s) you would like to buy?"
-    })
-    .then(function(answer) {
-        var query = "SELECT item_id FROM products WHERE ?"
-        connection.query(query, {item_id: answer.item_id }, function(err, res) {
-         for (var i = 0; i < res.length; i++) {
-             console.log("Item ID: " + res[i].item_id);
-         } 
-         runSearch();  
-        });
-    });
-  
-} 
-
-function itemQuantity() {
-    inquirer
-    .prompt({
-        name: "unit",
-        type: "input",
-        message: "How many units of the product(s) would you like to buy?"
-    })
-    .then(function(answer) {
-        var query = "SELECT stock_quantity FROM products WHERE ?"
-        connection.query(query, {stock_quantity: answer.stock_quantity}, function(err, res) {
-            for (var i = 0; i < res.length; i++) {
-                console.log("Units Chosen: " + res[i].stock_quanity);
-            }
-            runSearch();
-        });
+//function to load table
+function loadProducts() {
+    connection.query("SELECT * FROM products", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+    customerPrompt(res);
     });
 }
-itemQuantity();
+
+//function that prompts user with questions
+function customerPrompt(inventory) {
+
+    inquirer
+    .prompt( [
+        {
+            name: "choice",
+            type: "input",
+            message: "What is the ID of the item(s) you would like to purchase?",
+           //validating that what was entered was a number
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                    return true;
+                }
+                return false;
+            }    
+            },
+        
+        {
+            name: "units",
+            type: "input",
+            message: "How many units of the item(s) would you like to purchase?", 
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                    return true;
+                }
+                return false;
+            }
+        }
+    ])
+    .then(function(answer) {
+
+        var chosenUnit;
+        for (var i = 0; i < results.length; i++) {
+           if (results[i].item_name === answer.units) {
+            chosenUnit = results[i];
+           } 
+        }
+        //determine if there is enough stock to satisfy purchase
+        if (chosenUnit.stock_quantity < parseInt(answer.units)) {
+
+            connection.query(
+                "UPDATE products SET ? WHERE ?",
+                [
+                    {
+                        stock_quantity: answer.units
+                    },
+                    {
+                        price: chosenUnit.price
+                    }
+                ],
+                function(error) {
+                    if (error) throw err;
+                    console.log("Your purchase has been submitted successfully!");
+                    customerPrompt();
+                }
+            );
+            }
+            else {
+                //not enough stock to satisfy purchase
+                console.log("Insufficient Quantity!");
+                customerPrompt();
+            }
+        });
+    }
