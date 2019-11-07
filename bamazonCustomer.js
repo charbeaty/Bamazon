@@ -3,7 +3,7 @@ var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
     host: "localhost",
-    port: 3030,
+    port: 3306,
     user: "root",
     password: "P@izley2013",
     database: "bamazon_db"
@@ -14,10 +14,13 @@ connection.connect(function(err) {
         console.error("error connecting: " + err.stack);
     }
     //run the loadProducts function after connection is made
+    // loadProducts();
+    console.log('connected as id ' + connection.threadId);
+
     loadProducts();
 } );
 
-//function to load table
+// function to load table
 function loadProducts() {
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
@@ -58,14 +61,14 @@ function customerPrompt(inventory) {
     ])
     .then(function(answer) {
 
-        var chosenUnit;
-        for (var i = 0; i < results.length; i++) {
-           if (results[i].item_name === answer.units) {
-            chosenUnit = results[i];
-           } 
-        }
+        // var chosenUnit;
+        // for (var i = 0; i < stock_quantity.length; i++) {
+        //    if (stock_quantity[i].item_name === answer.units) {
+        //     chosenUnit = results[i];
+        //    } 
+        // }
         //determine if there is enough stock to satisfy purchase
-        if (chosenUnit.stock_quantity < parseInt(answer.units)) {
+        if (stock_quantity < parseInt(answer.units)) {
 
             connection.query(
                 "UPDATE products SET ? WHERE ?",
@@ -80,7 +83,7 @@ function customerPrompt(inventory) {
                 function(error) {
                     if (error) throw err;
                     console.log("Your purchase has been submitted successfully!");
-                    customerPrompt();
+                    // customerPrompt();
                 }
             );
             }
