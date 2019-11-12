@@ -9,7 +9,7 @@ var connection = mysql.createConnection({
     database: "bamazon_db"
 });
 //connect to mysql server and database
-connection.connect(function(err) {
+connection.connect(function (err) {
     if (err) {
         console.error("error connecting: " + err.stack);
     }
@@ -18,79 +18,62 @@ connection.connect(function(err) {
     console.log('connected as id ' + connection.threadId);
 
     loadProducts();
-} );
+});
 
 // function to load table
 function loadProducts() {
-    connection.query("SELECT * FROM products", function(err, res) {
+    connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
         console.table(res);
-    customerPrompt(res);
+        customerPrompt(res);
     });
 }
 
 //function that prompts user with questions
-function customerPrompt(inventory) {
+var customerPrompt = function(res) {
 
-    inquirer
-    .prompt( [
-        {
-            name: "choice",
-            type: "input",
-            message: "What is the ID of the item(s) you would like to purchase?",
-           //validating that what was entered was a number
-            validate: function(value) {
-                if (isNaN(value) === false) {
-                    return true;
+    inquirer.prompt([{
+                type: "input",
+                name: "choice",
+                message: "What is the ID of the item you would like to purchase? [Quit with Q]",
+            }]).then(function (answer) {
+                var correct = false;
+                if(answer.choice.toUpperCase()=="Q"){
+                    process.exit();
                 }
-                return false;
-            }    
-            },
-        
-        {
-            name: "units",
-            type: "input",
-            message: "How many units of the item(s) would you like to purchase?", 
-            validate: function(value) {
-                if (isNaN(value) === false) {
-                    return true;
-                }
-                return false;
-            }
-        }
-    ])
-    .then(function(answer) {
-
-        // var chosenUnit;
-        // for (var i = 0; i < stock_quantity.length; i++) {
-        //    if (stock_quantity[i].item_name === answer.units) {
-        //     chosenUnit = results[i];
-        //    } 
-        // }
-        //determine if there is enough stock to satisfy purchase
-        if (stock_quantity < parseInt(answer.units)) {
-
-            connection.query(
-                "UPDATE products SET ? WHERE ?",
-                [
-                    {
-                        stock_quantity: answer.units
-                    },
-                    {
-                        price: chosenUnit.price
+                for (var i = 0; i < res.length; i++) {
+                    if (res[i].itemid === answer.choice) {
+                        correct=true;
+                        var product = answer.choice;
+                        var id = i;
+                        inquirer.prompt({
+                            type: "input",
+                            name: "quant",
+                            message: "How many would you like to buy?",
+                            validate: function (value) {
+                                if (isNaN(value) === false) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            }
+                        }).then(function (answer) {
+                            if ((res[id].stockquantity - answer.quant) > 0) {
+                                connection.query("UPDATE products SET stockquantity = '" + (res[id].stockquantity-
+                                answer.quant) + "' WHERE itemid ='"+ product + "'", function(err, res2){
+                                console.log("Product Bought!");
+                                loadProducts();
+                            })
+                    } else {
+                        console.log("Not a valid selection!");
+                        customerPrompt(res);
                     }
-                ],
-                function(error) {
-                    if (error) throw err;
-                    console.log("Your purchase has been submitted successfully!");
-                    // customerPrompt();
-                }
-            );
+                })
+              }
             }
-            else {
-                //not enough stock to satisfy purchase
-                console.log("Insufficient Quantity!");
-                customerPrompt();
+            if(i===res.length && correct===false){
+                console.log("Not a valid selection!");
+                customerPrompt(res);
             }
-        });
+        })
     }
