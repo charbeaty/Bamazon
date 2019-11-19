@@ -1,6 +1,6 @@
 # Bamazon
 
-Bamazon is an Amazon-like storefront using MySQL and Inquirer. The takes in orders from customers and depletes stock from the store's inventory.
+Bamazon is an Amazon-like storefront using MySQL and Inquirer that takes in orders from customers and depletes stock from the store's inventory.
 
 ## Packages Used
 
