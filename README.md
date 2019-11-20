@@ -11,17 +11,14 @@ Bamazon is an Amazon-like storefront using MySQL and Inquirer that takes in orde
 
 When the app is first opened, MySQL is used to load a table that shows the customer the store's current inventory. 
 <!-- Insert pic of table here -->
-![MySQL table](/images/)
+![MySQL table](/images/firstPrompt.png)
 
 The customer is then prompted through inquirer to choose an item from the table. 
-<!-- Insert pic of first prompt -->
-![First Prompt]()
 
 Once the customer has entered the item they would like to purchase, they are once again prompted through inquirer and asked the quantity of the item they would like to purchase.
-<!-- Insert pic of second prompt -->
-![Second Prompt]()
+
 After the customer has input the item and quantity, the stock quantity is updated.
 <!-- Insert pic of stock that has been updated -->
-![Updated stock]()
+![Updated stock](/images/secondPrompt.png)
 ## Links to the code
 [GitHub Repo](https://github.com/charbeaty/Bamazon.git)
