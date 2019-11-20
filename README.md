@@ -11,7 +11,7 @@ Bamazon is an Amazon-like storefront using MySQL and Inquirer that takes in orde
 
 When the app is first opened, MySQL is used to load a table that shows the customer the store's current inventory. 
 <!-- Insert pic of table here -->
-![MySQL table](/images/firstPrompt.png)
+![MySQL table](/images/prompt.png)
 
 The customer is then prompted through inquirer to choose an item from the table. 
 
